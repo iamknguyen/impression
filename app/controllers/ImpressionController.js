@@ -12,15 +12,16 @@ module.exports = {
   addOneimpression: function(req, res, next) {
     var uniqueId = Math.random().toString(36).substring(2) 
     + (new Date()).getTime().toString(36);
-    
-    models.Impression.create({
-      uuid: uniqueId,
-    })
-     .then((user) => {
-       res.json(user);
-     })
-     .catch((err) => {
-       res.json(err);
-     });
+    res.json(req.query)
+    // models.Impression.create({
+    //   uuid: req.query.uuid,
+    //   timestamp: req.query.timestamp
+    // })
+    //  .then((user) => {
+    //    res.json(user);
+    //  })
+    //  .catch((err) => {
+    //    res.json(err);
+    //  });
   }
 }
