@@ -1,9 +1,15 @@
 FROM node:6.5.0
-RUN mkdir -p /src/app
+RUN mkdir /src
+
 RUN npm install nodemon -g
-WORKDIR /src/app
-ADD app/package.json /src/app/package.json
-RUN npm install --quiet
-ADD app/nodemon.json /src/app/nodemon.json
+
+WORKDIR /src
+ADD app/package.json /src/package.json
+RUN npm install
+ADD app/nodemon.json /src/nodemon.json
+RUN ls -a
+COPY app /src
+RUN ls -a
 EXPOSE 3000
+
 CMD npm start
