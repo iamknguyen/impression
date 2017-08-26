@@ -32,7 +32,7 @@ module.exports = {
             timestamp: req.query.timestamp
           })
            .then((user) => {
-             res.json(user);
+             res.json("saved");
            })
            .catch((err) => {
              res.json(err);
