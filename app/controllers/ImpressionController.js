@@ -1,4 +1,5 @@
 const models = require('../config/db.config.js');
+const redis = require('../config/redis.config.js');
 
 module.exports = {
 
@@ -19,6 +20,11 @@ module.exports = {
    */
   addOneimpression: function(req, res, next) {
     if(req.query.uuid && req.query.timestamp){
+    
+      /**
+       * Optional redis caching check
+       */
+      //redis.sismember('allUuid', req.query.uuid)
       models.Impression.findOne({
         where: {
           uuid: req.query.uuid
@@ -27,17 +33,20 @@ module.exports = {
       .then(data => {
         if(data) res.status(400).json("Duplicate uuid detected, please try again")
         else{
-          models.Impression.create({
+          return models.Impression.create({
             uuid: req.query.uuid,
             timestamp: req.query.timestamp
           })
-           .then((user) => {
-             res.json("saved");
-           })
-           .catch((err) => {
-             res.json(err);
-           });
         }
+      })
+      .then((user) => {
+        if(user){
+          res.json("saved");
+          return redis.sadd('allUuid', req.query.uuid)
+        }
+      })
+      .then(data =>{
+        if(data) console.log(data);
       })
       .catch((err) => {
         res.json(err);
