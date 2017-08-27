@@ -15,13 +15,15 @@ const models = require('./config/db.config.js');
 models.sequelize.sync().then(() => {
   const express = require('express');
   const app = express();
-  const port = process.env.PORT || 8081;
+  const port = process.env.PORT || 3000;
   const routes = require('./config/routes.js');
   let server = require('http').createServer(app);
   require('./config/middleware.js')(app, express);
+  require('./config/redis.config.js');
   app.use(routes);
 
   server.listen(port, () => {
     console.log('Listening on port ' + port);
+    console.log("Application has started")
   });
 });

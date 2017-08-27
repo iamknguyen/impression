@@ -1,26 +1,59 @@
 const models = require('../config/db.config.js');
+const redis = require('../config/redis.config.js');
 
 module.exports = {
 
+  /**
+   * Get the number of impressions
+   */
   getAllimpressions: function(req, res, next) {
-    models.Impression.findAll({})
+    models.Impression.count()
     .then((data) => {
-      res.json(data.length);
+      res.json(data);
     });
   },
 
+  /**
+   * Will add an impression to the database
+   * returns 200 if successful
+   * returns 400 if uuid and timestamp were not passed in
+   */
   addOneimpression: function(req, res, next) {
-    var uniqueId = Math.random().toString(36).substring(2) 
-    + (new Date()).getTime().toString(36);
+    if(req.query.uuid && req.query.timestamp){
     
-    models.Impression.create({
-      uuid: uniqueId,
-    })
-     .then((user) => {
-       res.json(user);
-     })
-     .catch((err) => {
-       res.json(err);
-     });
+      /**
+       * Optional redis caching check
+       */
+      //redis.sismember('allUuid', req.query.uuid)
+      models.Impression.findOne({
+        where: {
+          uuid: req.query.uuid
+        }
+      })
+      .then(data => {
+        if(data) res.status(400).json("Duplicate uuid detected, please try again")
+        else{
+          return models.Impression.create({
+            uuid: req.query.uuid,
+            timestamp: req.query.timestamp
+          })
+        }
+      })
+      .then((user) => {
+        if(user){
+          res.json("saved");
+          return redis.sadd('allUuid', req.query.uuid)
+        }
+      })
+      .then(data =>{
+        if(data) console.log(data);
+      })
+      .catch((err) => {
+        res.json(err);
+      });
+    }else{
+      res.status(400).json("Please enter a valid uuid and timestamp")
+    }
+    
   }
 }

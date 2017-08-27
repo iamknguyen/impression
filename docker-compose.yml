@@ -1,11 +1,11 @@
 web:
   build: .
+  command: npm start
   volumes:
-    - "./app:/src/app"
+    - "/app:/src/app"
   ports:
-    - "8081:8081"
+    - "3000:3000"
   links:
     - "db:redis"
-
 db:
   image: redis
