@@ -19,9 +19,11 @@ models.sequelize.sync().then(() => {
   const routes = require('./config/routes.js');
   let server = require('http').createServer(app);
   require('./config/middleware.js')(app, express);
+  require('./config/redis.config.js');
   app.use(routes);
 
   server.listen(port, () => {
     console.log('Listening on port ' + port);
+    console.log("Application has started")
   });
 });

@@ -7,9 +7,9 @@ WORKDIR /src
 ADD app/package.json /src/package.json
 RUN npm install
 ADD app/nodemon.json /src/nodemon.json
-RUN ls -a
+#RUN ls -a
 COPY app /src
-RUN ls -a
+#RUN ls -a
 EXPOSE 3000
-
+EXPOSE 6379
 CMD npm start
